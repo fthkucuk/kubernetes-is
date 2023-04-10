@@ -17,8 +17,8 @@ wso2:
   # If provided, these parameters will be used to obtain official WSO2 product Docker images available at WSO2 Private Docker Registry (https://docker.wso2.com/)
   # for this deployment
   subscription:
-    username: ""
-    password: ""
+    username: "fthkucuk@hotmail.com"
+    password: "Ztfk2013."
 
   deployment:
     dependencies:
@@ -111,13 +111,12 @@ wso2:
 
       # Configure Ingresses
       ingress:
-        className: ""
+        className: "nginx"
         identity:
           # Hostname for Identity Server
           hostname: "identity.wso2.com"
           # Annotations for the Identity service Ingress
-          annotations:
-            kubernetes.io/ingress.class: "nginx"
+          annotations:            
             nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
             nginx.ingress.kubernetes.io/affinity: "cookie"
             nginx.ingress.kubernetes.io/session-cookie-name: "route"

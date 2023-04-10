@@ -29,6 +29,7 @@ spec:
   tls:
   - hosts:
     - {{ .Values.wso2.deployment.wso2is.ingress.identity.hostname }}
+    secretName: wso2-tls
   rules:
   - host: {{ .Values.wso2.deployment.wso2is.ingress.identity.hostname }}
     http:

@@ -35,8 +35,8 @@ data:
     base_path = "https://$ref{server.hostname}"
 
     [super_admin]
-    username = "admin"
-    password = "admin"
+    username = "maslak"
+    password = "izy6jXTkW9v2ceRF75qE"
     create_admin_account = true
 
     [user_store]
@@ -44,18 +44,18 @@ data:
 
     [database.identity_db]
     type = "mysql"
-    url = "jdbc:mysql://wso2is-mysql-db-service:3306/WSO2IS_IDENTITY_DB?autoReconnect=true&amp;useSSL=false"
-    username = "wso2carbon"
-    password = "wso2carbon"
+    url = "jdbc:mysql://10.10.20.233:3306/WSO2IS_IDENTITY_DB?autoReconnect=true&amp;useSSL=false"
+    username = "maslak"
+    password = "!Es$3#Y1noG6"
     driver = "com.mysql.cj.jdbc.Driver"
     [database.identity_db.pool_options]
     validationQuery = "SELECT 1"
 
     [database.shared_db]
     type = "mysql"
-    url = "jdbc:mysql://wso2is-mysql-db-service:3306/WSO2IS_SHARED_DB?autoReconnect=true&amp;useSSL=false"
-    username = "wso2carbon"
-    password = "wso2carbon"
+    url = "jdbc:mysql://10.10.20.233:3306/WSO2AM_SHARED_DB?autoReconnect=true&amp;useSSL=false"
+    username = "maslak"
+    password = "!Es$3#Y1noG6"
     driver = "com.mysql.cj.jdbc.Driver"
     [database.shared_db.pool_options]
     validationQuery = "SELECT 1"
@@ -74,10 +74,6 @@ data:
     [identity.auth_framework.endpoint]
     app_password= "dashboard"
 
-    [keystore.primary]
-    name = "wso2carbon.jks"
-    password = "wso2carbon"
-
     [clustering]
     membership_scheme = "kubernetes"
     domain = "wso2.carbon.domain"
@@ -91,6 +87,79 @@ data:
     enable= true
     health_checker.super_tenant_health_checker.properties.'monitored.user.stores' = "primary"
     health_checker.data_source_health_checker.properties.'monitored.datasources' = "jdbc/WSO2CarbonDB,jdbc/WSO2USER_DB,jdbc/SHARED_DB,jdbc/WSO2ConsentDS,jdbc/WSO2IdentityDB"
+
+    [[event_listener]]
+    id = "token_revocation"
+    type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
+    name = "org.wso2.is.notification.ApimOauthEventInterceptor"
+    order = 1
+
+    [[resource.access_control]]
+    context = "(.)/keymanager-operations/user-info/claims(.)"
+    secure = true
+    http_method = "GET"
+    permissions = "/permission/admin/manage/identity/usermgt/list"
+    scopes = "internal_user_mgt_list"
+
+    [[resource.access_control]]
+    context = "(.*)/keymanager-operations/user-info/claims/generate"
+    secure = true
+    http_method = "POST"
+    permissions = "/permission/admin/manage/identity/usermgt/list"
+    scopes = "internal_user_mgt_list"
+
+    [[resource.access_control]]
+    context = "(.*)/keymanager-operations/dcr/register"
+    secure = true
+    http_method = "POST"
+    permissions = "/permission/admin/manage/identity/applicationmgt/create"
+    scopes = "internal_application_mgt_create"
+
+    [[resource.access_control]]
+    context = "(.*)/keymanager-operations/dcr/register(.*)"
+    secure = true
+    http_method = "GET"
+    permissions = "/permission/admin/manage/identity/applicationmgt/view"
+    scopes = "internal_application_mgt_view"
+
+    [[resource.access_control]]
+    context = "(.*)/keymanager-operations/dcr/register(.*)"
+    secure = true
+    http_method = "DELETE"
+    permissions = "/permission/admin/manage/identity/applicationmgt/delete"
+    scopes = "internal_application_mgt_delete"
+
+    [[resource.access_control]]
+    context = "(.*)/keymanager-operations/dcr/register(.*)"
+    secure = true
+    http_method = "PUT"
+    permissions = "/permission/admin/manage/identity/applicationmgt/update"
+    scopes = "internal_application_mgt_update"
+
+    [[resource.access_control]]
+    context = "(.*)/keymanager-operations/dcr/register(.*)"
+    secure = true
+    http_method = "POST"
+    permissions = "/permission/admin/manage/identity/applicationmgt/update"
+    scopes = "internal_application_mgt_update"
+
+    [tenant_context.rewrite]
+    custom_webapps = ["/keymanager-operations/"]
+
+    [event_listener.properties]
+    notification_endpoint = "https://wso2am-pattern-3-am-cp-service:9443/internal/data/v1/notify"
+    username = "maslak"
+    password = "izy6jXTkW9v2ceRF75qE"
+    'header.X-WSO2-KEY-MANAGER' = "WSO2-IS"
+
+    [keystore]
+    userstore_password_encryption = "InternalKeyStore"
+    
+    [system.parameter]
+    "org.wso2.CipherTransformation" = "RSA/ECB/OAEPwithSHA1andMGF1Padding"
+    
+    [encryption]
+    internal_crypto_provider = "org.wso2.carbon.crypto.provider.KeyStoreBasedInternalCryptoProvider"
 
     {{ if .Values.wso2.monitoring.enabled }}
     [monitoring.jmx]

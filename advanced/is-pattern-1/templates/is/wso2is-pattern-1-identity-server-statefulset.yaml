@@ -40,7 +40,7 @@ spec:
         {{ if .Values.wso2.deployment.dependencies.mysql }}
         - name: init-is-db
           image: busybox:1.31
-          command: ['sh', '-c', 'echo -e "Checking for the availability of MySQL Server deployment"; while ! nc -z wso2is-mysql-db-service 3306; do sleep 1; printf "-"; done; echo -e "  >> MySQL Server has started";']
+          command: ['sh', '-c', 'echo -e "Checking for the availability of MySQL Server deployment"; while ! nc -z 10.10.20.233 3306; do sleep 1; printf "-"; done; echo -e "  >> MySQL Server has started";']
         - name: init-mysql-connector-download
           image: busybox:1.32
           command:
@@ -50,9 +50,14 @@ spec:
               set -e
               connector_version=8.0.17
               wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/${connector_version}/mysql-connector-java-${connector_version}.jar -P /mysql-connector-jar/
+              wget https://apim.docs.wso2.com/en/4.2.0/assets/attachments/administer/wso2is-extensions-1.6.8.zip
+              unzip -j wso2is-extensions-1.6.8.zip wso2is-extensions-1.6.8/dropins/* -d /mysql-connector-jar/
+              unzip -j wso2is-extensions-1.6.8.zip wso2is-extensions-1.6.8/webapps/* -d /is-connector-war/
           volumeMounts:
             - name: mysql-connector-jar
               mountPath: /mysql-connector-jar
+            - name: is-connector-war
+              mountPath: /is-connector-war              
         {{ end }}
         {{ if .Values.wso2.centralizedLogging.enabled }}
         - name: init-elasticsearch
@@ -129,6 +134,10 @@ spec:
               name: metrics
             {{ end }}
           volumeMounts:
+            - name: is-connector-war
+              mountPath: /home/wso2carbon/wso2-artifact-volume/repository/deployment/server/webapps          
+            - name: is-keystore
+              mountPath: /home/wso2carbon/wso2-config-volume/repository/resources/security
             - name: identity-server-conf
               mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/deployment.toml
               subPath: deployment.toml
@@ -196,6 +205,11 @@ spec:
         - name: {{ template "is-pattern-1.resource.prefix" . }}-wso2-private-registry-creds
       {{ end }}
       volumes:
+      - name: is-connector-war
+        emptyDir: {}     
+      - name: is-keystore
+        configMap:
+          name: is-keystore
       - name: identity-server-conf
         configMap:
           name: {{ template "is-pattern-1.resource.prefix" . }}-identity-server-conf

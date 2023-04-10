@@ -1,0 +1,6 @@
+dependencies:
+- name: mysql-is
+  repository: file://../databases/mysql-is
+  version: 6.1.0-1
+digest: sha256:2193fdf7abfa8e39ffcccc801d6dc5e9b1a12337ffdfd7aee3520dfe16d7f4ef
+generated: "2023-04-10T22:16:37.9390044+03:00"
