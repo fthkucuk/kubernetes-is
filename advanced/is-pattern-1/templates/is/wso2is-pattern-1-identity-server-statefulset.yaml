@@ -137,7 +137,7 @@ spec:
             - name: is-connector-war
               mountPath: /home/wso2carbon/wso2-artifact-volume/repository/deployment/server/webapps          
             - name: is-keystore
-              mountPath: /home/wso2carbon/wso2-config-volume/repository/resources/security
+              mountPath: /home/wso2carbon/wso2-artifact-volume/repository/resources/security
             - name: identity-server-conf
               mountPath: /home/wso2carbon/wso2-config-volume/repository/conf/deployment.toml
               subPath: deployment.toml
